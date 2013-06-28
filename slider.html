@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport"content="width=device-width, height=device-height, initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0, user-scalable=no" />
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="-1">
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+
+<style>
+ul	{list-style:none; padding:0px; margin:0;}
+ul li	{list-style:none; padding:0px; float:left;}
+ul li:hover	{background-color:#e5e5e5;}
+</style>
+<script>
+$(document).ready(function() 
+{
+	console.info($('ul').width());
+	$('.right').click(function(){
+		movement(0);
+	})
+	$('.left').click(function(){
+		movement(1);
+	})
+})
+
+
+var sw = 300; //슬라이더 뷰어 너비
+var sh = 102; //슬라이더 뷰어 폭
+var cc = $('.contents').length; //컨텐츠  갯수
+var ctw = sw*cc; //컨텐츠 총 길이
+var sp = 500; //슬라이드 속도
+function movement(cmd)
+{
+	var mv = 0;
+	if(cmd==0)
+	{
+		mv = sw+Number($('.contents').attr('pos'));
+	}
+	if(cmd==1)
+	{
+		mv = Number($('.contents').attr('pos'))-sw;
+	}
+	//이동
+	$('.slider').animate({
+		scrollLeft:mv
+	}, sp, function() {
+		//현재 위치
+		$('.contents').attr('pos',$('.slider').scrollLeft());
+	});
+}
+</script>
+</head>
+<body>
+<div class="slider" style="overflow:hidden; margin:0px; padding:0px; width:300px; height:100px; z-index:9;">
+	<ul class="contents" pos="0" style="width:1200px;">
+		<li class="content" style="width:300px; height:100px;">
+			1
+		</li>
+		<li class="content" style="width:300px; height:100px;">
+			2
+		</li>
+		<li class="content" style="width:300px; height:100px;">
+			3
+		</li>
+		<li class="content" style="width:300px; height:100px;">
+			4
+		</li>
+	</ul>
+</div>
+<div class="left">좌</div>
+<div class="right">우</div>
+</body>
+</html>
