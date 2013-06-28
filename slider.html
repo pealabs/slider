@@ -16,60 +16,115 @@ ul li:hover	{background-color:#e5e5e5;}
 <script>
 $(document).ready(function() 
 {
-	console.info($('ul').width());
-	$('.right').click(function(){
-		movement(0);
-	})
-	$('.left').click(function(){
-		movement(1);
-	})
+	var s1 = new slider({
+		slider:'slider'
+		,contents:'contents'
+		,content:'content'
+		,right:'right'
+		,left:'left'
+		,navi:'navi'
+		,width:300
+		,height:100
+		,switchingSpeed:500
+		,rotationalSpeed:2000
+		,autoRepeat:true
+	}).run();
+	
 })
 
-
-var sw = 300; //슬라이더 뷰어 너비
-var sh = 102; //슬라이더 뷰어 폭
-var cc = $('.contents').length; //컨텐츠  갯수
-var ctw = sw*cc; //컨텐츠 총 길이
-var sp = 500; //슬라이드 속도
-function movement(cmd)
+function slider(opt)
 {
-	var mv = 0;
-	if(cmd==0)
+	var sn = opt.slider; //슬라이더 명
+	var cns = opt.contents;//컨텐츠 ul 명
+	var cn = opt.content;//컨텐츠 li 명
+	var sw = opt.width; //슬라이더 뷰어 너비
+	var sh = opt.height; //슬라이더 뷰어 폭
+	var cc = $('.'+cn).length; //컨텐츠  갯수
+	var ctw = sw*cc; //컨텐츠 총 길이
+	var sp = opt.switchingSpeed; //슬라이드 속도
+	var rs = opt.rotationalSpeed; //반복 속도
+	var ar = opt.autoRepeat;//자동 반복
+	var rmv = opt.right; //오른쪽 이동 버튼 명
+	var lmv = opt.left;//왼쪽 이동 버튼 명
+	
+	this.run = init
+	
+	function init()
 	{
-		mv = sw+Number($('.contents').attr('pos'));
-	}
-	if(cmd==1)
+		$('.'+sn).css('overflow','hidden');
+		$('.'+sn).css('margin','0px');
+		$('.'+sn).css('padding','0px');
+		$('.'+sn).css('width',sw+'px');
+		$('.'+sn).css('heigth',sh+'px');
+		$('.'+sn).css('z-index','9');
+
+		$('.'+cns).css('width',ctw+'px');
+		
+		$('.'+cn).css('width',sw+'px');
+		$('.'+cn).css('height',sh+'px');
+		
+		$('.'+rmv).click(function(){
+			movement(0);
+		})
+		$('.'+lmv).click(function(){
+			movement(1);
+		})
+
+		if(opt.autoRepeat)
+		{
+			setInterval(function() {
+				movement(0);
+			}, opt.rotationalSpeed );
+		}
+	}	
+	function movement(cmd)
 	{
-		mv = Number($('.contents').attr('pos'))-sw;
+		//console.info($('.'+cns).attr('pos'));
+		var mv = 0;
+		if(cmd==0)
+		{
+			mv = sw+Number($('.'+cns).attr('pos'));
+			if(mv==ctw){
+				$('.'+cn).last().after($('.'+cn).first());
+				//mv = 0;
+			}
+		}
+		if(cmd==1)
+		{
+			mv = Number($('.'+cns).attr('pos'))-sw;
+		}
+		
+		//이동
+		$('.'+sn).animate({
+			scrollLeft:mv
+		}, sp, function() {
+			//현재 위치
+			$('.'+cns).attr('pos',$('.'+sn).scrollLeft());
+			//$('.'+cn).last().after($('.'+cn).first());
+		});
 	}
-	//이동
-	$('.slider').animate({
-		scrollLeft:mv
-	}, sp, function() {
-		//현재 위치
-		$('.contents').attr('pos',$('.slider').scrollLeft());
-	});
 }
 </script>
 </head>
 <body>
-<div class="slider" style="overflow:hidden; margin:0px; padding:0px; width:300px; height:100px; z-index:9;">
-	<ul class="contents" pos="0" style="width:1200px;">
-		<li class="content" style="width:300px; height:100px;">
+<div class="slider">
+	<ul class="contents" pos="0">
+		<li class="content">
 			1
 		</li>
-		<li class="content" style="width:300px; height:100px;">
+		<li class="content">
 			2
 		</li>
-		<li class="content" style="width:300px; height:100px;">
+		<li class="content">
 			3
 		</li>
-		<li class="content" style="width:300px; height:100px;">
+		<li class="content">
 			4
 		</li>
 	</ul>
 </div>
 <div class="left">좌</div>
 <div class="right">우</div>
+
 </body>
 </html>
