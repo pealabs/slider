@@ -18,6 +18,7 @@ $(document).ready(function()
 		,content:'content'
 		,right:'right'
 		,left:'left'
+		,view:1
 		,navi:'navi'
 		,width:300
 		//,width:$('.slider').width()
@@ -25,9 +26,9 @@ $(document).ready(function()
 		//,height:$('.slider').height()
 		,switchingSpeed:500
 		,rotationalSpeed:2000
-		,autoRepeat:false
+		,autoSlide:false
 		,touch:true
-		,reverse:true
+		,autoRewind:true
 	}).run();
 	
 })
@@ -43,11 +44,13 @@ function slider(opt)
 	var ctw = sw*cc; //컨텐츠 총 길이
 	var sp = opt.switchingSpeed; //슬라이드 속도
 	var rs = opt.rotationalSpeed; //반복 속도
-	var ar = opt.autoRepeat;//자동 반복
+	var as = opt.autoSlide;//자동 넘기기
 	var rmv = opt.right; //오른쪽 이동 버튼 명
 	var lmv = opt.left;//왼쪽 이동 버튼 명
 	var tc = opt.touch;//터치 사용 여부
-	var rv = opt.reverse;//되감기 여부
+	var ar = opt.autoRewind;//되감기 여부
+	var nv = opt.navi; //네비게이션 명
+	var vw = opt.view //한번에 표시 할 갯수
 	this.run = init
 	
 	function init()
@@ -62,7 +65,7 @@ function slider(opt)
 		$('.'+sn).css('overflow','hidden');
 		$('.'+sn).css('margin','0px');
 		$('.'+sn).css('padding','0px');
-		$('.'+sn).css('width',sw+'px');
+		$('.'+sn).css('width',(sw*vw)+'px');
 		$('.'+sn).css('heigth',sh+'px');
 		$('.'+sn).css('z-index','9');
 
@@ -77,20 +80,17 @@ function slider(opt)
 		$('.'+lmv).click(function(){
 			movement(1);
 		})
-		if(rv)
-		{
-			var re = Number($('.'+cns).attr('pos'))+sw;
-			$('.'+sn).scrollLeft(re);
-			$('.'+cns).attr('pos',$('.'+sn).scrollLeft());
-			$('.'+cn).first().before($('.'+cn).last());
-		}
-		if(ar)
+		
+	
+		//자동 넘기기
+		if(as)
 		{
 			setInterval(function() {
 				movement(0);
 			}, opt.rotationalSpeed );
 		}
 		
+		//터치 및 마우스 사용 활성화
 		if(tc)
 		{
 			$('.'+sn).bind('touchstart',function(event){touchstart(event);});
@@ -100,10 +100,25 @@ function slider(opt)
 			$('.'+sn).on('mousemove',function(event){touchmove(event);});
 			$('.'+sn).on('mouseup',function(event){touchend(event);});
 		}
+		
+		//엘리먼트 order granting
+		calNavi();
+		
+		
 		$(document).mouseup(function(){
 			isMouseDown = false;
 		})
 	}	
+	function calNavi()
+	{
+		var html = '';
+		$('.'+cn).each(function(index)
+		{
+			$(this).attr('order',index);
+			html +='<span class="'+index+'"></span>'
+		});
+		$('.'+nv).html(html);
+	}
 	var stx = null;
 	var sty = null;
 	var mtx = null;
@@ -120,9 +135,7 @@ function slider(opt)
 		var e = event.originalEvent;
 		stx = e.pageX || e.targetTouches[0].pageX;
 		sty = e.pageY || e.targetTouches[0].pageY;
-		//console.info(stx+':'+sty);
-		//$('.x').html(stx);
-		//$('.y').html(sty);
+
 	}
 	function touchmove(event)
 	{
@@ -132,10 +145,6 @@ function slider(opt)
 			var e = event.originalEvent;
 			mtx = e.pageX || e.targetTouches[0].pageX;
 			mty = e.pageY || e.targetTouches[0].pageY;
-			//console.info(mtx+':'+mty);
-		
-			//$('.x').html(mtx);
-			//$('.y').html(mty);
 			
 			$('.'+sn).scrollLeft(Number($('.'+cns).attr('pos'))+(stx-mtx))
 		}
@@ -146,14 +155,8 @@ function slider(opt)
 		var e = event.originalEvent;
 		etx = e.pageX || e.changedTouches[0].pageX;
 		ety = e.pageY || e.changedTouches[0].pageY;
-		//console.info(etx+':'+ety);
-		//$('.x').html(etx);
-		//$('.y').html(ety);
-		
-		//console.info(stx-etx);
-		
-		
-		var center = sw/2;
+
+		var center = (sw*vw)/2;
 		if((stx-etx)<0)
 		{
 			if(etx>center)
@@ -189,14 +192,29 @@ function slider(opt)
 	{
 		//console.info($('.'+cns).attr('pos'));
 		var mv = 0;
-			
+
 		if(cmd==0)
 		{
+			if(ar && Number($('.'+cns).attr('pos'))==(ctw-(sw*vw)))
+			{
+				$('.'+cn).last().after($('.'+cn).first());
+				var re = Number($('.'+cns).attr('pos'))-sw;
+				$('.'+sn).scrollLeft(re);
+				$('.'+cns).attr('pos',$('.'+sn).scrollLeft());	
+			}
 			mv = Number($('.'+cns).attr('pos'))+sw;	
 		}
 		if(cmd==1)
 		{
+			if(ar && Number($('.'+cns).attr('pos'))==0)
+			{
+				$('.'+cn).first().before($('.'+cn).last());
+				var re = Number($('.'+cns).attr('pos'))+sw;
+				$('.'+sn).scrollLeft(re);
+				$('.'+cns).attr('pos',$('.'+sn).scrollLeft());	
+			}
 			mv = Number($('.'+cns).attr('pos'))-sw;
+			
 		}
 		
 		//이동
@@ -205,21 +223,18 @@ function slider(opt)
 		}, sp, function() {
 			//현재 위치
 			$('.'+cns).attr('pos',$('.'+sn).scrollLeft());
-			if(rv)
+			if(ar)
 			{
-				if(mv==(ctw-sw) && cmd==0){
+				if(mv==(ctw-(sw*vw)) && cmd==0){
 					$('.'+cn).last().after($('.'+cn).first());
 					var re = Number($('.'+cns).attr('pos'))-sw;
-					$('.'+sn).scrollLeft(re);
-					$('.'+cns).attr('pos',$('.'+sn).scrollLeft());
 				}
 				if(mv==0 && cmd==1){
 					$('.'+cn).first().before($('.'+cn).last());
 					var re = Number($('.'+cns).attr('pos'))+sw;
-					$('.'+sn).scrollLeft(re);
-					$('.'+cns).attr('pos',$('.'+sn).scrollLeft());
-					
 				}
+				$('.'+sn).scrollLeft(re);
+				$('.'+cns).attr('pos',$('.'+sn).scrollLeft());
 			}
 		});
 		
@@ -241,15 +256,13 @@ function slider(opt)
 		</li>
 		<li class="content">
 			4
-		</li>
+		</li>	
 	</ul>
 </div>
 <div class="navi"></div>
 <div class="left">좌</div>
 <div class="right">우</div>
-<div class="current">0</div>
-<div class="x">0</div>
-<div class="y">0</div>
+
 
 </body>
 </html>
