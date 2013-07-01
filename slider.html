@@ -5,9 +5,7 @@
 <meta name="viewport"content="width=device-width, height=device-height, initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0, user-scalable=no" />
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="-1">
-
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
-
 <style>
 ul	{list-style:none; padding:0px; margin:0;}
 ul li	{list-style:none; padding:0px; float:left;}
@@ -23,11 +21,14 @@ $(document).ready(function()
 		,right:'right'
 		,left:'left'
 		,navi:'navi'
-		,width:300
+		,width:500
+		//,width:$('.slider').width()
 		,height:100
+		//,height:$('.slider').height()
 		,switchingSpeed:500
 		,rotationalSpeed:2000
-		,autoRepeat:true
+		,autoRepeat:false
+		,touch:true
 	}).run();
 	
 })
@@ -70,6 +71,11 @@ function slider(opt)
 			movement(1);
 		})
 
+		var re = Number($('.'+cns).attr('pos'))+sw;
+		$('.'+sn).scrollLeft(re);
+		$('.'+cns).attr('pos',$('.'+sn).scrollLeft());
+		$('.'+cn).first().before($('.'+cn).last());
+		
 		if(opt.autoRepeat)
 		{
 			setInterval(function() {
@@ -81,13 +87,10 @@ function slider(opt)
 	{
 		//console.info($('.'+cns).attr('pos'));
 		var mv = 0;
+			
 		if(cmd==0)
 		{
-			mv = sw+Number($('.'+cns).attr('pos'));
-			if(mv==ctw){
-				$('.'+cn).last().after($('.'+cn).first());
-				//mv = 0;
-			}
+			mv = sw+Number($('.'+cns).attr('pos'));	
 		}
 		if(cmd==1)
 		{
@@ -100,14 +103,27 @@ function slider(opt)
 		}, sp, function() {
 			//현재 위치
 			$('.'+cns).attr('pos',$('.'+sn).scrollLeft());
-			//$('.'+cn).last().after($('.'+cn).first());
+		
+			if(mv==(ctw-sw) && cmd==0){
+				var re = Number($('.'+cns).attr('pos'))-sw;
+				$('.'+sn).scrollLeft(re);
+				$('.'+cns).attr('pos',$('.'+sn).scrollLeft());
+				$('.'+cn).last().after($('.'+cn).first());
+			}
+			if(mv==0 && cmd==1){
+				var re = Number($('.'+cns).attr('pos'))+sw;
+				$('.'+sn).scrollLeft(re);
+				$('.'+cns).attr('pos',$('.'+sn).scrollLeft());
+				$('.'+cn).first().before($('.'+cn).last());
+			}
 		});
+		
 	}
 }
 </script>
 </head>
 <body>
-<div class="slider">
+<div class="slider" style="background:red;">
 	<ul class="contents" pos="0">
 		<li class="content">
 			1
@@ -123,6 +139,7 @@ function slider(opt)
 		</li>
 	</ul>
 </div>
+<div class="navi"></div>
 <div class="left">좌</div>
 <div class="right">우</div>
 
