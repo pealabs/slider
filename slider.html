@@ -51,6 +51,7 @@ function slider(opt)
 	var ar = opt.autoRewind;//되감기 여부
 	var nv = opt.navi; //네비게이션 명
 	var vw = opt.view //한번에 표시 할 갯수
+	
 	this.run = init
 	
 	function init()
@@ -70,6 +71,7 @@ function slider(opt)
 		$('.'+sn).css('z-index','9');
 
 		$('.'+cns).css('width',ctw+'px');
+		$('.'+cns).attr('pos',0);
 		
 		$('.'+cn).css('width',sw+'px');
 		$('.'+cn).css('height',sh+'px');
@@ -244,7 +246,7 @@ function slider(opt)
 </head>
 <body>
 <div class="slider">
-	<ul class="contents" pos="0">
+	<ul class="contents">
 		<li class="content">
 			1
 		</li>
