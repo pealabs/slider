@@ -121,8 +121,8 @@ function slider(opt)
 		stx = e.pageX || e.targetTouches[0].pageX;
 		sty = e.pageY || e.targetTouches[0].pageY;
 		//console.info(stx+':'+sty);
-		$('.x').html(stx);
-		$('.y').html(sty);
+		//$('.x').html(stx);
+		//$('.y').html(sty);
 	}
 	function touchmove(event)
 	{
@@ -134,8 +134,8 @@ function slider(opt)
 			mty = e.pageY || e.targetTouches[0].pageY;
 			//console.info(mtx+':'+mty);
 		
-			$('.x').html(mtx);
-			$('.y').html(mty);
+			//$('.x').html(mtx);
+			//$('.y').html(mty);
 			
 			$('.'+sn).scrollLeft(Number($('.'+cns).attr('pos'))+(stx-mtx))
 		}
@@ -147,8 +147,8 @@ function slider(opt)
 		etx = e.pageX || e.changedTouches[0].pageX;
 		ety = e.pageY || e.changedTouches[0].pageY;
 		//console.info(etx+':'+ety);
-		$('.x').html(etx);
-		$('.y').html(ety);
+		//$('.x').html(etx);
+		//$('.y').html(ety);
 		
 		//console.info(stx-etx);
 		
