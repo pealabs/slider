@@ -6,6 +6,9 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="-1">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+<style>
+
+</style>
 <script>
 $(document).ready(function() 
 {
@@ -18,12 +21,13 @@ $(document).ready(function()
 		,navi:'navi'
 		,width:300
 		//,width:$('.slider').width()
-		,height:100
+		,height:200
 		//,height:$('.slider').height()
 		,switchingSpeed:500
 		,rotationalSpeed:2000
 		,autoRepeat:false
 		,touch:true
+		,reverse:true
 	}).run();
 	
 })
@@ -42,7 +46,8 @@ function slider(opt)
 	var ar = opt.autoRepeat;//자동 반복
 	var rmv = opt.right; //오른쪽 이동 버튼 명
 	var lmv = opt.left;//왼쪽 이동 버튼 명
-	
+	var tc = opt.touch;//터치 사용 여부
+	var rv = opt.reverse;//되감기 여부
 	this.run = init
 	
 	function init()
@@ -72,19 +77,114 @@ function slider(opt)
 		$('.'+lmv).click(function(){
 			movement(1);
 		})
-
-		var re = Number($('.'+cns).attr('pos'))+sw;
-		$('.'+sn).scrollLeft(re);
-		$('.'+cns).attr('pos',$('.'+sn).scrollLeft());
-		$('.'+cn).first().before($('.'+cn).last());
-		
-		if(opt.autoRepeat)
+		if(rv)
+		{
+			var re = Number($('.'+cns).attr('pos'))+sw;
+			$('.'+sn).scrollLeft(re);
+			$('.'+cns).attr('pos',$('.'+sn).scrollLeft());
+			$('.'+cn).first().before($('.'+cn).last());
+		}
+		if(ar)
 		{
 			setInterval(function() {
 				movement(0);
 			}, opt.rotationalSpeed );
 		}
+		
+		if(tc)
+		{
+			$('.'+sn).bind('touchstart',function(event){touchstart(event);});
+			$('.'+sn).bind('touchmove',function(event){touchmove(event);});
+			$('.'+sn).bind('touchend',function(event){touchend(event);});
+			$('.'+sn).on('mousedown',function(event){touchstart(event);});
+			$('.'+sn).on('mousemove',function(event){touchmove(event);});
+			$('.'+sn).on('mouseup',function(event){touchend(event);});
+		}
+		$('.'+sn).mouseup(function(){
+			isMouseDown = false;
+		})
 	}	
+	var stx = null;
+	var sty = null;
+	var mtx = null;
+	var mty = null;
+	var etx = null;
+	var ety = null;
+	var spx = null;
+	var spy = null;
+	var isMouseDown = false;
+	function touchstart(event)
+	{
+		isMouseDown = true;
+		event.preventDefault();
+		var e = event.originalEvent;
+		stx = e.pageX || e.targetTouches[0].pageX;
+		sty = e.pageY || e.targetTouches[0].pageY;
+		//console.info(stx+':'+sty);
+		$('.x').html(stx);
+		$('.y').html(sty);
+	}
+	function touchmove(event)
+	{
+		if(isMouseDown)
+		{
+			event.preventDefault();
+			var e = event.originalEvent;
+			mtx = e.pageX || e.targetTouches[0].pageX;
+			mty = e.pageY || e.targetTouches[0].pageY;
+			//console.info(mtx+':'+mty);
+		
+			$('.x').html(mtx);
+			$('.y').html(mty);
+			
+			$('.'+sn).scrollLeft(Number($('.'+cns).attr('pos'))+(stx-mtx))
+		}
+	}
+	function touchend(event)
+	{
+		event.preventDefault();
+		var e = event.originalEvent;
+		etx = e.pageX || e.changedTouches[0].pageX;
+		ety = e.pageY || e.changedTouches[0].pageY;
+		//console.info(etx+':'+ety);
+		$('.x').html(etx);
+		$('.y').html(ety);
+		
+		//console.info(stx-etx);
+		
+		
+		var center = sw/2;
+		if((stx-etx)<0)
+		{
+			if(etx>center)
+			{
+				//console.info('좌에서 우로 넘어감');
+				movement(1);
+			}
+			if(etx<center)
+			{
+				//console.info('좌에서 우로 안넘어감');
+				$('.'+sn).animate({
+					scrollLeft:Number($('.'+cns).attr('pos'))
+				},sp,function(){});
+			}
+		}
+		if((stx-etx)>0)
+		{
+			if(etx<center)
+			{
+				movement(0);
+				//console.info('우에서 좌로 넘어감');
+			}
+			if(etx>center)
+			{
+				//console.info('우에서 좌로 안넘어감');
+				$('.'+sn).animate({
+					scrollLeft:Number($('.'+cns).attr('pos'))
+				},sp,function(){});
+			}
+		}
+	}
 	function movement(cmd)
 	{
 		//console.info($('.'+cns).attr('pos'));
@@ -92,7 +192,7 @@ function slider(opt)
 			
 		if(cmd==0)
 		{
-			mv = sw+Number($('.'+cns).attr('pos'));	
+			mv = Number($('.'+cns).attr('pos'))+sw;	
 		}
 		if(cmd==1)
 		{
@@ -105,18 +205,21 @@ function slider(opt)
 		}, sp, function() {
 			//현재 위치
 			$('.'+cns).attr('pos',$('.'+sn).scrollLeft());
-		
-			if(mv==(ctw-sw) && cmd==0){
-				var re = Number($('.'+cns).attr('pos'))-sw;
-				$('.'+sn).scrollLeft(re);
-				$('.'+cns).attr('pos',$('.'+sn).scrollLeft());
-				$('.'+cn).last().after($('.'+cn).first());
-			}
-			if(mv==0 && cmd==1){
-				var re = Number($('.'+cns).attr('pos'))+sw;
-				$('.'+sn).scrollLeft(re);
-				$('.'+cns).attr('pos',$('.'+sn).scrollLeft());
-				$('.'+cn).first().before($('.'+cn).last());
+			if(rv)
+			{
+				if(mv==(ctw-sw) && cmd==0){
+					$('.'+cn).last().after($('.'+cn).first());
+					var re = Number($('.'+cns).attr('pos'))-sw;
+					$('.'+sn).scrollLeft(re);
+					$('.'+cns).attr('pos',$('.'+sn).scrollLeft());
+				}
+				if(mv==0 && cmd==1){
+					$('.'+cn).first().before($('.'+cn).last());
+					var re = Number($('.'+cns).attr('pos'))+sw;
+					$('.'+sn).scrollLeft(re);
+					$('.'+cns).attr('pos',$('.'+sn).scrollLeft());
+					
+				}
 			}
 		});
 		
@@ -144,6 +247,9 @@ function slider(opt)
 <div class="navi"></div>
 <div class="left">좌</div>
 <div class="right">우</div>
+<div class="current">0</div>
+<div class="x">0</div>
+<div class="y">0</div>
 
 </body>
 </html>
