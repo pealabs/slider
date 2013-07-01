@@ -100,7 +100,7 @@ function slider(opt)
 			$('.'+sn).on('mousemove',function(event){touchmove(event);});
 			$('.'+sn).on('mouseup',function(event){touchend(event);});
 		}
-		$('.'+sn).mouseup(function(){
+		$(document).mouseup(function(){
 			isMouseDown = false;
 		})
 	}	
