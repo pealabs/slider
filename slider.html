@@ -6,11 +6,6 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="-1">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
-<style>
-ul	{list-style:none; padding:0px; margin:0;}
-ul li	{list-style:none; padding:0px; float:left;}
-ul li:hover	{background-color:#e5e5e5;}
-</style>
 <script>
 $(document).ready(function() 
 {
@@ -21,7 +16,7 @@ $(document).ready(function()
 		,right:'right'
 		,left:'left'
 		,navi:'navi'
-		,width:500
+		,width:300
 		//,width:$('.slider').width()
 		,height:100
 		//,height:$('.slider').height()
@@ -52,6 +47,13 @@ function slider(opt)
 	
 	function init()
 	{
+		$('.'+sn+' ul').css('list-style','none');
+		$('.'+sn+' ul').css('padding','0px');
+		$('.'+sn+' ul').css('margin','0px');
+		$('.'+sn+' ul>li').css('list-style','none');
+		$('.'+sn+' ul>li').css('padding','0px');
+		$('.'+sn+' ul>li').css('float','left');
+		
 		$('.'+sn).css('overflow','hidden');
 		$('.'+sn).css('margin','0px');
 		$('.'+sn).css('padding','0px');
@@ -123,7 +125,7 @@ function slider(opt)
 </script>
 </head>
 <body>
-<div class="slider" style="background:red;">
+<div class="slider">
 	<ul class="contents" pos="0">
 		<li class="content">
 			1
