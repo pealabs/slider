@@ -17,6 +17,8 @@ function slider(opt)
 	var ar = opt.autoRewind;//되감기 여부
 	var nv = opt.navi; //네비게이션 명
 	var vw = opt.view //한번에 표시 할 갯수
+	var ns = opt.naviSelected //선택된 네비 위치 표시
+	var nr = opt.naviRelease //선택안된 네비 위치 표시
 	
 	this.run = init
 	
@@ -83,9 +85,36 @@ function slider(opt)
 		$('.'+cn).each(function(index)
 		{
 			$(this).attr('order',index);
-			html +='<span class="'+index+'">'+opt.naviRelease+'</span>'
+			html +='<span class="'+nv+''+index+'">'+opt.naviRelease+'</span>'
 		});
 		$('.'+nv).html(html);
+		$('.'+nv+''+(curl-1)).html(ns);
+	}
+	var totl = $('.'+cn).length;
+	var curl  = 1;
+	function selectNavi(cmd)
+	{
+		$('.'+nv+''+(curl-1)).html(nr);
+		
+		if(cmd == 0)
+		{
+			curl = curl+1;
+			if(curl > totl)
+			{
+				curl = 1;
+			}
+		}
+		if(cmd == 1)
+		{
+			curl = curl-1;
+			if(curl == 0)
+			{
+				curl = totl;
+			}
+		}
+		
+		$('.'+nv+''+(curl-1)).html(ns);
+		//console.info(curl);
 	}
 	var stx = null;
 	var sty = null;
@@ -171,6 +200,7 @@ function slider(opt)
 				$('.'+cns).attr('pos',$('.'+sn).scrollLeft());	
 			}
 			mv = Number($('.'+cns).attr('pos'))+sw;	
+			
 		}
 		if(cmd==1)
 		{
@@ -182,8 +212,9 @@ function slider(opt)
 				$('.'+cns).attr('pos',$('.'+sn).scrollLeft());	
 			}
 			mv = Number($('.'+cns).attr('pos'))-sw;
-			
 		}
+		
+		selectNavi(cmd);
 		
 		//이동
 		$('.'+sn).animate({
@@ -203,8 +234,8 @@ function slider(opt)
 				}
 				$('.'+sn).scrollLeft(re);
 				$('.'+cns).attr('pos',$('.'+sn).scrollLeft());
+				
 			}
 		});
-		
 	}
 }
