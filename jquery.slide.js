@@ -1,4 +1,9 @@
-﻿
+﻿//엘리먼트에 top 값을 구할때 auto로 리턴 되는 것을 방지한다.
+jQuery.fn.cssNumber = function cssNumber(prop)
+{
+    var v = parseInt(this.css(prop),10);
+    return isNaN(v) ? 0 : v;
+};
 function slider(opt)
 {
 	var sn = opt.slider; //슬라이더 명
@@ -19,6 +24,7 @@ function slider(opt)
 	var vw = opt.view //한번에 표시 할 갯수
 	var ns = opt.naviSelected //선택된 네비 위치 표시
 	var nr = opt.naviRelease //선택안된 네비 위치 표시
+	var al = opt.align //슬라이드 정렬
 	
 	this.run = init
 	
@@ -32,7 +38,10 @@ function slider(opt)
 		$('.'+sn+' ul>li').css('float','left');
 		
 		$('.'+sn).css('overflow','hidden');
-		$('.'+sn).css('margin','0px');
+		$('.'+sn).css('position','relative');
+		$('.'+sn).css('left','50%');
+		$('.'+sn).css('margin-left','-'+((sw*vw)/2)+'px');
+
 		$('.'+sn).css('padding','0px');
 		$('.'+sn).css('width',(sw*vw)+'px');
 		$('.'+sn).css('heigth',sh+'px');
@@ -79,6 +88,7 @@ function slider(opt)
 			isMouseDown = false;
 		})
 	}	
+	
 	function calNavi()
 	{
 		var html = '';
@@ -154,6 +164,10 @@ function slider(opt)
 		ety = e.pageY || e.changedTouches[0].pageY;
 
 		var center = (sw*vw)/2;
+		
+		var correction = $('.'+sn).cssNumber('left');
+		center = correction;
+	
 		if((stx-etx)<0)
 		{
 			if(etx>center)

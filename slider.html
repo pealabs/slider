@@ -8,7 +8,10 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
 <script src="jquery.slide.js"></script>
 <style>
-
+.left {float:left;}
+.right {float:right;}
+.wrap {background:#eee;}
+.navi {text-align:center;}
 </style>
 <script>
 $(document).ready(function() 
@@ -39,7 +42,8 @@ $(document).ready(function()
 </script>
 </head>
 <body>
-<div class="slider" style="border:1px solid #eee;">
+<div class="wrap">
+<div class="slider">
 	<ul class="contents">
 		<li class="content">
 			1
@@ -57,6 +61,7 @@ $(document).ready(function()
 			5
 		</li>	
 	</ul>
+</div>
 </div>
 <div class="navi"></div>
 <div class="left">좌</div>
